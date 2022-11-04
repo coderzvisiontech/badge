@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+        .whole-div {
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-div {
+            position: relative;
+            background-color: transparent;
+        }
+
+        .transition-div {
+            height: 100px;
+            width: 105px;
+            background-color: #E5A468;
+            position: absolute;
+            top: 96px;
+            z-index: -1;
+            left: 103px;
+        }
+
+        .background-ray {
+            position: absolute;
+            left: 155px;
+            top: 150px;
+            border: 67px solid white;
+            border-radius: 50%;
+            width: 310px;
+            height: 310px;
+            box-sizing: border-box;
+            transform: translate(-50%, -50%);
+            animation: rays 2s 5s forwards;
+        }
+
+        .flag-number {
+            position: absolute;
+            top: 160px;
+            left: 50px;
+            width: 0%;
+            overflow: hidden;
+            animation: progress 2s 5s forwards;
+
+        }
+
+        .progress-outer {
+            width: 100%;
+            height: 17px;
+            background: #f9e9da;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .progress-outer label:after {
+            content: "";
+            animation: lablelNumber 5s forwards;
+        }
+
+        .progress-inner {
+            width: 100%;
+            height: 17px;
+            background: #E5A468;
+            border-radius: 20px;
+            animation: progress 5s;
+            position: absolute;
+            top: 0;
+        }
+
+        .background-div {
+            background-color: #f9e9da;
+            height: 0px;
+            width: 105px;
+            position: absolute;
+            top: 96px;
+            z-index: -1;
+            left: 103px;
+            animation: line 5s;
+        }
+
+        @keyframes line {
+            from {
+                height: 101px;
+            }
+
+            to {
+                height: 0px;
+            }
+        }
+
+        @keyframes progress {
+            from {
+                width: 0%;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes rays {
+            from {
+                border: 67px solid white;
+            }
+
+            to {
+                border: 0px solid white;
+            }
+        }
+
+        @keyframes lablelNumber {
+            0% {
+                content: "1/3";
+            }
+
+            50% {
+                content: "2/3";
+            }
+
+            100% {
+                content: "3/3";
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="whole-div">
+        <div class="image-div">
+            <img height="300" src="images/star_flare.png" alt="">
+            <div class="background-ray"></div>
+            <div class="transition-div"></div>
+            <div class="background-div"></div>
+            <div class="flag-number"><img height="80" src="images/badge.png" alt=""></div>
+            <div class="progress-outer">
+                <label style="position: relative; z-index: 5;" for=""></label>
+                <div class="progress-inner"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
