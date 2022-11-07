@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-void main() => runApp(AnimApp());
+void main() => runApp(const AnimApp());
 
 class AnimApp extends StatelessWidget {
   const AnimApp({super.key});
@@ -26,21 +26,20 @@ class MyAnimPage extends StatefulWidget {
 }
 
 class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
-  late AnimationController controller;
+  late AnimationController controller,badgeAnimController,flareAnimController;
   late Animation colorAnimation, progressAnimation;
-  late Animation sizeAnimation;
+  late Animation<double> sizeAnimation,badgeSizeAnim,flareSizeAnim;
   late double percent = 0.0;
   late String progress = "";
   bool showProgress = false,
       showBadge = false,
       showFlare = false,
       showStar = false,
+      showContainer = false,
       showSparkle = false;
 
-  void _onStartPress() {
-    showProgress = true;
-    controller.forward();
-  }
+
+ late Timer timer;
 
   bool _showBadge() {
     return showBadge;
@@ -53,44 +52,49 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
     return showSparkle;
   }
 
-  void _onStopPress() {
-    showProgress = false;
-    showBadge = false;
-    showFlare = false;
-    controller.reset();
-  }
+
 
   bool _show() {
     return showProgress;
   }
 
-  double _progress() {
-    return percent / 10;
-  }
 
   @override
   void initState() {
     controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 7));
+        AnimationController(vsync: this, duration: const Duration(seconds: 6));
     colorAnimation =
         ColorTween(begin: const Color(0xFFF9E9DA), end: const Color(0xFFD4955B))
             .animate(controller);
-    sizeAnimation = Tween<double>(begin: 0.0, end: 150.0).animate(controller);
+    sizeAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(controller);
     controller.addListener(() {
       setState(() {
         if (controller.isCompleted) {
           showBadge = true;
           showFlare = true;
           showSparkle = true;
+          badgeAnimController.forward();
+          flareAnimController.forward();
+
         }
       });
     });
+    
+    badgeAnimController = AnimationController(vsync: this,duration: const Duration(seconds: 2));
+    badgeSizeAnim = CurvedAnimation(parent: badgeAnimController, curve: Curves.fastLinearToSlowEaseIn);
+
+    flareAnimController = AnimationController(vsync: this,duration: const Duration(seconds: 2));
+    flareSizeAnim = CurvedAnimation(parent: flareAnimController, curve: Curves.easeInToLinear);
+
     Timer(const Duration(seconds: 1), () {
       showStar = true;
+      showContainer = true;
       controller.forward();
       showProgress = true;
+
     });
-    Timer _timer = Timer.periodic(const Duration(milliseconds: 55), (_timer) {
+
+    timer = Timer.periodic(const Duration(milliseconds: 55), (timer) {
       setState(() {
         percent++;
         if (percent <= 33) {
@@ -100,10 +104,9 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
         } else if (percent <= 99) {
           progress = "3/3";
         }
-
         if (percent >= 100) {
           percent = 0.0;
-          _timer.cancel();
+          timer.cancel();
         }
       });
     });
@@ -126,28 +129,72 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
             children: <Widget>[
               Visibility(
                 visible: _showFlare(),
-                child: Image.asset(
-                  "assets/images/star_flare1.png",
-                  height: 350,
-                ),
+                child: SizeTransition(
+                  sizeFactor: flareSizeAnim,
+                  axisAlignment: 1,
+                  child: Image.asset(
+                    "assets/images/star_flare1.png",
+                    height: 350,
+                  ),
+                )
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 0),
+
+             Visibility(visible: showContainer,child: Stack(
+               children: [
+                 Container(
+                   width: 130,
+                   height: 130,
+                   decoration: const BoxDecoration(
+                     shape: BoxShape.circle,
+                     gradient: LinearGradient(
+                       colors: [ Color(0xFFF6D6B7),
+                         Color(0xFFD7A06D),
+                         Color(0xFFD4955B)],
+                       begin:Alignment.topLeft,
+                       end: Alignment.bottomRight,
+                       stops: [0.5, 0.0, 0.0], //stops for individual color
+                     ),
+                   ),
+                 ),
+                 SizeTransition(
+                   axis: Axis.horizontal,
+                   sizeFactor: sizeAnimation,
+                   axisAlignment: 1,
+
+                   child:Padding(padding: const EdgeInsets.all(0),child: Container(
+                     width: 120,
+                     height: 120,
+                     color: Colors.white,
+                   ),
+                   ),
+                 ),
+               ],
+             ),),
+
+
+
+
+              /*Padding(
+                padding: const EdgeInsets.only(top: 0),
                 child: Container(
                   height: sizeAnimation.value,
                   width: sizeAnimation.value,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [Color(0xFFF9E9DA),Color(0xFFD0A781),Color(
-                          0xFFD4955B)],
-                        begin:FractionalOffset.topLeft,
-                      end: FractionalOffset.bottomRight,
+                      colors: [ Color(0xFFF6D6B7),
+                        Color(0xFFD7A06D),
+                        Color(0xFFD4955B)],
+                        begin:Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      stops: [0.5, 0.0, 0.0], //stops for individual color
+
                     ),
 
                   ),
                 ),
-              ),
+              ),*/
+
 
               Visibility(
                 visible: showStar,
@@ -161,16 +208,15 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
               ),
               Visibility(
                 visible: _showBadge(),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(top: 120.0,),
-                  child: Image.asset(
-                    "assets/images/badge1.png",
-                    height: 200,
-                    width: 300,
+                child: Padding(padding: const EdgeInsets.only(top: 120.0,),
+                  child: SizeTransition(
+                  sizeFactor: badgeSizeAnim,
+                    axis: Axis.horizontal,
+                    axisAlignment: 1,
+                    child: Image.asset("assets/images/badge1.png",height: 200,width: 300,),
+                  ),
                   ),
                 ),
-              ),
               Visibility(
                 visible: _showSparkle(),
                 child: Padding(padding: const EdgeInsets.only(bottom: 90,right: 12),
@@ -183,7 +229,7 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
           Visibility(
             visible: _show(),
               child:
-              Padding(padding: EdgeInsets.only(top: 50,),child: Align(alignment: Alignment.topCenter,
+              Padding(padding: const EdgeInsets.only(top: 50,),child: Align(alignment: Alignment.topCenter,
                 child: LinearPercentIndicator(
                   width: MediaQuery.of(context).size.width,
                   lineHeight: 15.0,
@@ -218,21 +264,6 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
             ),
           ),*/
 
-          /*const Padding(padding: EdgeInsets.only(top: 30.0)),
-        TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.blue,
-                padding: const EdgeInsets.all(16.0),
-                textStyle: const TextStyle(fontSize: 20),
-              ),
-              onPressed: _onStartPress, child: const Text("Start")),
-        TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.blue,
-              padding: const EdgeInsets.all(16.0),
-              textStyle: const TextStyle(fontSize: 20),
-            ),
-            onPressed: _onStopPress, child: const Text("Stop")),*/
         ],
       ),
     );
@@ -241,6 +272,7 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     controller.dispose();
+    badgeAnimController.dispose();
     super.dispose();
   }
 }

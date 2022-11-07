@@ -1,5 +1,5 @@
+
 import 'package:flutter/material.dart';
-import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
 void main() => runApp(LiquidAnimApp());
 
@@ -21,11 +21,25 @@ class LiquidAnimApp extends StatelessWidget{
 
 }
 
-class _MyLiquidAnimPageState extends State<MyLiquidAnimPage>{
+class _MyLiquidAnimPageState extends State<MyLiquidAnimPage> with TickerProviderStateMixin{
+  double topPosition = 10, leftPosition = 10;
+  double height = 100;
+  late AnimationController _animationController;
+  late Animation<double> _expandAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this, duration: const Duration(seconds: 7));
+    _expandAnimation = Tween(begin: 1.0, end: 0.0).animate(_animationController);
+    _animationController.forward();
+  }
+
+  bool showFlag = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+     /* appBar: AppBar(
         title:Text("Liquid Progress Bar"),
         backgroundColor: Colors.redAccent,
       ),
@@ -68,6 +82,42 @@ class _MyLiquidAnimPageState extends State<MyLiquidAnimPage>{
                   )
               ),
             ],)
+      ),*/
+      appBar: AppBar(title: Text('App Bar')),
+      body: Container(
+
+        child: Stack(
+
+          children: [
+
+            Container(
+              width: 200,
+              height: 200,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [ Color(0xFFF6D6B7),
+                    Color(0xFFD7A06D),
+                    Color(0xFFD4955B)],
+                  begin:Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: [0.5, 0.0, 0.0], //stops for individual color
+                ),
+
+              ),
+            ),
+            SizeTransition(
+              axisAlignment: 1,
+              axis: Axis.horizontal,
+              sizeFactor: _expandAnimation,
+              child: Container(
+                width: 200,
+                height: 200,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
