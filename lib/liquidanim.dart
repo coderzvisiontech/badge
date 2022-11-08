@@ -86,6 +86,7 @@ class _MyLiquidAnimPageState extends State<MyLiquidAnimPage> with TickerProvider
       appBar: AppBar(title: Text('App Bar')),
       body: Container(
 
+        alignment: Alignment.center,
         child: Stack(
 
           children: [
@@ -108,7 +109,7 @@ class _MyLiquidAnimPageState extends State<MyLiquidAnimPage> with TickerProvider
             ),
             SizeTransition(
               axisAlignment: 1,
-              axis: Axis.horizontal,
+              axis: Axis.vertical,
               sizeFactor: _expandAnimation,
               child: Container(
                 width: 200,

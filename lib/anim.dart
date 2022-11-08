@@ -26,9 +26,9 @@ class MyAnimPage extends StatefulWidget {
 }
 
 class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
-  late AnimationController controller,badgeAnimController,flareAnimController;
+  late AnimationController controller, badgeAnimController;
   late Animation colorAnimation, progressAnimation;
-  late Animation<double> sizeAnimation,badgeSizeAnim,flareSizeAnim;
+  late Animation<double> sizeAnimation, badgeSizeAnim;
   late double percent = 0.0;
   late String progress = "";
   bool showProgress = false,
@@ -38,8 +38,7 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
       showContainer = false,
       showSparkle = false;
 
-
- late Timer timer;
+  late Timer timer;
 
   bool _showBadge() {
     return showBadge;
@@ -48,16 +47,14 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
   bool _showFlare() {
     return showFlare;
   }
-  bool _showSparkle(){
+
+  bool _showSparkle() {
     return showSparkle;
   }
-
-
 
   bool _show() {
     return showProgress;
   }
-
 
   @override
   void initState() {
@@ -74,24 +71,20 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
           showFlare = true;
           showSparkle = true;
           badgeAnimController.forward();
-          flareAnimController.forward();
-
         }
       });
     });
-    
-    badgeAnimController = AnimationController(vsync: this,duration: const Duration(seconds: 2));
-    badgeSizeAnim = CurvedAnimation(parent: badgeAnimController, curve: Curves.fastLinearToSlowEaseIn);
 
-    flareAnimController = AnimationController(vsync: this,duration: const Duration(seconds: 2));
-    flareSizeAnim = CurvedAnimation(parent: flareAnimController, curve: Curves.easeInToLinear);
+    badgeAnimController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    badgeSizeAnim = CurvedAnimation(
+        parent: badgeAnimController, curve: Curves.fastLinearToSlowEaseIn);
 
     Timer(const Duration(seconds: 1), () {
       showStar = true;
       showContainer = true;
       controller.forward();
       showProgress = true;
-
     });
 
     timer = Timer.periodic(const Duration(milliseconds: 55), (timer) {
@@ -129,50 +122,59 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
             children: <Widget>[
               Visibility(
                 visible: _showFlare(),
-                child: SizeTransition(
-                  sizeFactor: flareSizeAnim,
-                  axisAlignment: 1,
-                  child: Image.asset(
-                    "assets/images/star_flare1.png",
-                    height: 350,
-                  ),
-                )
+                child: Image.asset(
+                  "assets/images/star_flare1.png",
+                  height: 350,
+                ),
               ),
-
-             Visibility(visible: showContainer,child: Stack(
-               children: [
-                 Container(
-                   width: 130,
-                   height: 130,
-                   decoration: const BoxDecoration(
-                     shape: BoxShape.circle,
-                     gradient: LinearGradient(
-                       colors: [ Color(0xFFF6D6B7),
-                         Color(0xFFD7A06D),
-                         Color(0xFFD4955B)],
-                       begin:Alignment.topLeft,
-                       end: Alignment.bottomRight,
-                       stops: [0.5, 0.0, 0.0], //stops for individual color
-                     ),
-                   ),
-                 ),
-                 SizeTransition(
-                   axis: Axis.horizontal,
-                   sizeFactor: sizeAnimation,
-                   axisAlignment: 1,
-
-                   child:Padding(padding: const EdgeInsets.all(0),child: Container(
-                     width: 120,
-                     height: 120,
-                     color: Colors.white,
-                   ),
-                   ),
-                 ),
-               ],
-             ),),
-
-
-
+              Visibility(
+                visible: showContainer,
+                child:SizedBox(
+              width: 150,
+              height: 150,
+              child: Center(
+                child:  Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            Color(0xFFD4955B),
+                            Color(0xFFD7A06D),
+                            Color(0xFFF6D6B7)
+                          ],
+                          radius: 0.98,
+                          focal: Alignment(0.4, 0.9),
+                          tileMode: TileMode.clamp,
+                          /*  begin:Alignment.topLeft,
+                       end: Alignment.bottomRight,*/
+                          stops: [0.38, 0.0, 0.0], //stops for individual color
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: SizeTransition(
+                      axis: Axis.vertical,
+                        sizeFactor: sizeAnimation,
+                      axisAlignment: 1,
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        color: Colors.white,
+                      ),
+                    ),
+                    ),
+                  ],
+                ),
+    ),
+                ),
+              ),
 
               /*Padding(
                 padding: const EdgeInsets.only(top: 0),
@@ -195,7 +197,6 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
                 ),
               ),*/
 
-
               Visibility(
                 visible: showStar,
                 child: Padding(
@@ -208,45 +209,62 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
               ),
               Visibility(
                 visible: _showBadge(),
-                child: Padding(padding: const EdgeInsets.only(top: 120.0,),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 130.0,
+                  ),
                   child: SizeTransition(
-                  sizeFactor: badgeSizeAnim,
+                    sizeFactor: badgeSizeAnim,
                     axis: Axis.horizontal,
                     axisAlignment: 1,
-                    child: Image.asset("assets/images/badge1.png",height: 200,width: 300,),
-                  ),
+                    child: Image.asset(
+                      "assets/images/badge1.png",
+                      height: 200,
+                      width: 300,
+                    ),
                   ),
                 ),
+              ),
               Visibility(
                 visible: _showSparkle(),
-                child: Padding(padding: const EdgeInsets.only(bottom: 90,right: 12),
-              child: Image.asset("assets/images/sparkle.png",height: 80,width: 80,
-              ),
-              ),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 90, right: 12),
+                  child: Image.asset(
+                    "assets/images/sparkle.png",
+                    height: 80,
+                    width: 80,
+                  ),
+                ),
               ),
             ],
           ),
           Visibility(
-            visible: _show(),
-              child:
-              Padding(padding: const EdgeInsets.only(top: 50,),child: Align(alignment: Alignment.topCenter,
-                child: LinearPercentIndicator(
-                  width: MediaQuery.of(context).size.width,
-                  lineHeight: 15.0,
-                  progressColor: const Color(0xFFD4955B),
-                  backgroundColor: const Color(0xFFF9E9DA),
-                  animationDuration: 4700,
-                  animation: true,
-                  barRadius: const Radius.circular(15.0),
-                  percent: 100 / 100,
-                  center: Text(
-                    progress,
-                    style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
+              visible: _show(),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 50,
+                ),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: LinearPercentIndicator(
+                    width: MediaQuery.of(context).size.width,
+                    lineHeight: 15.0,
+                    progressColor: const Color(0xFFD4955B),
+                    backgroundColor: const Color(0xFFF9E9DA),
+                    animationDuration: 4700,
+                    animation: true,
+                    barRadius: const Radius.circular(15.0),
+                    percent: 100 / 100,
+                    center: Text(
+                      progress,
+                      style: const TextStyle(
+                          fontSize: 12.0, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),),
-          )),
+                ),
+              )),
 
-        /*  Visibility(
+          /*  Visibility(
             visible: _show(),
             child: LinearPercentIndicator(
               width: MediaQuery.of(context).size.width,
@@ -263,7 +281,6 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
               ),
             ),
           ),*/
-
         ],
       ),
     );
