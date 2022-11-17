@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
+
+
 InAppLocalhostServer localhostServer = InAppLocalhostServer();
 
 void main() => runApp(AnimApp(3));
