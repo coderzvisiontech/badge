@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:rive/rive.dart';
 
 InAppLocalhostServer localhostServer = InAppLocalhostServer();
 
@@ -11,6 +10,7 @@ void main() => runApp(AnimApp(3));
 
 class AnimApp extends StatelessWidget {
   AnimApp(this.progressLevel, {super.key});
+
 
   int progressLevel = 0;
 
