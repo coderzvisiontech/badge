@@ -8,7 +8,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 
 InAppLocalhostServer localhostServer = InAppLocalhostServer();
 
-void main() => runApp(AnimApp(3));
+void main() => runApp(AnimApp(0));
 
 class AnimApp extends StatelessWidget {
   AnimApp(this.progressLevel, {super.key});
@@ -55,11 +55,18 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
       showFlare = false,
       showStar = false,
       showContainer = false,
-      showSparkle = false;
+      showSparkle = false,
+      button1State = false,
+  button2State = false,
+  button3State = false,
+  showButtons = false;
+
   int progressLevel = 0;
+  bool initiate = true;
   late Timer timer;
   double progressBarlevel = 0.0;
-
+  double begin = 1.0;
+  double animEnd = 0.0;
   _MyAnimPageState(this.progressLevel);
 
   bool _showBadge() {
@@ -78,6 +85,59 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
     return showProgress;
   }
 
+  _button1onClick(){
+    print("coming");
+    initiate = false;
+
+      if(progressLevel==3){
+        showFlare = false;
+        showBadge = false;
+        showSparkle = false;
+      }
+      progressLevel = 1;
+      begin = 1.0;
+      button1State = false;
+      button2State = true;
+      _call_initState();
+
+  }
+  _button2onClick(){
+    print("comingm2");
+   /*
+    if(progressLevel == 0){
+      begin = 1.0;
+      progressLevel = 2;
+
+    }else{
+    }*/
+    begin = 1 - ((progressLevel == 0) ? 1.0 : (progressLevel / 3));
+    button2State = false;
+    button3State = true;
+    progressLevel = progressLevel+1;
+    _call_initState();
+
+  }
+  _button3onClick(){
+    print("coming3");
+
+   /*
+    if(progressLevel == 0){
+      progressLevel = 3;
+      begin = 1.0;
+    }
+    else{
+ }*/
+    begin = 1 - ((progressLevel == 0) ? 1.0 : (progressLevel / 3));
+    button3State = false;
+    progressLevel = progressLevel+1;
+    _call_initState();
+  }
+  _call_initState(){
+    setState(() {
+      initState();
+    });
+  }
+
   @override
   void initState() {
     controller = AnimationController(
@@ -90,10 +150,10 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
     sparkleTimingController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 10000));
 
-    double animEnd = 1 - ((progressLevel == 0) ? 1.0 : (progressLevel / 3));
+    animEnd = 1 - ((progressLevel == 0) ? 1.0 : (progressLevel / 3));
 
     sizeAnimation =
-        Tween<double>(begin: 1.0, end: (animEnd)).animate(controller);
+        Tween<double>(begin: (begin), end: (animEnd)).animate(controller);
     controller.addListener(() {
       setState(() {
         if (controller.isCompleted) {}
@@ -151,34 +211,55 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
     ).animate(CurvedAnimation(
         parent: sparkleAnimController, curve: Curves.slowMiddle));
 
-    Timer(const Duration(seconds: 1), () {
-      showStar = true;
-      showContainer = true;
+    if(initiate){
+      Timer(const Duration(seconds: 1), () {
+        showStar = true;
+        showContainer = true;
+        showProgress = true;
+        button1State = true;
+        showButtons = true;
+        badgeTimingController.forward();
+        flareTimingController.forward();
+        sparkleTimingController.forward();
+      });
+    }else{
       controller.forward();
+
+      progressBarlevel = progressLevel / 3;
       badgeTimingController.forward();
       flareTimingController.forward();
       sparkleTimingController.forward();
-      showProgress = true;
-      progressBarlevel = progressLevel / 3;
-    });
 
-    timer = Timer.periodic(const Duration(milliseconds: 55), (timer) {
-      setState(() {
-        percent++;
-        if (percent <= 33) {
-          progress = "1/3";
-        } else if (percent > 34 && percent <= 66) {
-          progress = "2/3";
-        } else if (percent > 67 && percent <= 99) {
-          progress = "3/3";
-        }
+      /*if(progressLevel == 3){
+        button1State = true;
+        button2State = false;
+        button3State = false;
 
-        if (percent >= (progressLevel / 3) * 100) {
-          percent = 0.0;
-          timer.cancel();
-        }
+      }*/
+    }
+
+
+      timer = Timer.periodic(const Duration(milliseconds: 55), (timer) {
+        setState(() {
+
+          percent++;
+          if (percent >1 && percent <= 33) {
+            progress = "1/3";
+          } else if (percent > 34 && percent <= 66) {
+            progress = "2/3";
+          } else if (percent > 68 && percent <= 99) {
+            progress = "3/3";
+          }
+
+          if (percent >= (progressLevel / 3) * 100) {
+            percent = (progressLevel / 3) * 100;
+            timer.cancel();
+          }
+
+        });
       });
-    });
+
+
 
     super.initState();
   }
@@ -209,11 +290,6 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-
-                /*child: Image.asset(
-                  "assets/images/star_flare1.png",
-                  height: 350,
-                ),*/
               ),
               Visibility(
                 visible: showContainer,
@@ -228,7 +304,7 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
                           height: 180,
                         ),
                         Positioned(
-                          top: 25,
+                          top: 27,
                           left: 35,
                           child: SizeTransition(
                             axis: Axis.vertical,
@@ -302,21 +378,55 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
                   alignment: Alignment.topCenter,
                   child: LinearPercentIndicator(
                     width: MediaQuery.of(context).size.width,
-                    lineHeight: 15.0,
+                    lineHeight: 18.0,
                     progressColor: const Color(0xFFD4955B),
                     backgroundColor: const Color(0xFFF9E9DA),
                     animationDuration: 3000,
+                    animateFromLastPercent: true,
                     animation: true,
                     barRadius: const Radius.circular(15.0),
                     percent: progressBarlevel,
                     center: Text(
                       progress,
                       style: const TextStyle(
-                          fontSize: 12.0, fontWeight: FontWeight.bold),
+                          fontSize: 12.0, fontWeight: FontWeight.bold,color: Colors.white),
                     ),
                   ),
                 ),
               )),
+
+          Visibility(
+            visible: showButtons,
+              child: Padding(padding: EdgeInsets.only(top: 20),
+            child: Column(
+              children: <Widget>[
+                Padding(padding: EdgeInsets.all(2),child: ButtonBar(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ElevatedButton(
+                      onPressed:button1State ? _button1onClick : null,
+                      style: ElevatedButton.styleFrom(shape: StadiumBorder(), backgroundColor: Color(0xFFD4955B),disabledBackgroundColor: Color(0XA6808080)),
+                      child: Text('1',style: TextStyle(color: Colors.white),),
+                    ),
+                    ElevatedButton(
+                      onPressed: button2State ? _button2onClick : null,
+                      style: ElevatedButton.styleFrom(shape: StadiumBorder(), backgroundColor: Color(0xFFD4955B),disabledBackgroundColor: Color(0XA6808080)),
+                      child: Text('2',style: TextStyle(color: Colors.white),),
+                    ),
+                    ElevatedButton(
+                      onPressed: button3State ?_button3onClick : null,
+                      style: ElevatedButton.styleFrom(shape: StadiumBorder(), backgroundColor: Color(0xFFD4955B),disabledBackgroundColor: Color(0XA6808080),),
+                      child: Text('3',style: TextStyle(color: Colors.white,),),
+                    )
+                  ],
+                ),)
+
+              ],
+            ),))
+
+
+
+
         ],
       ),
     );
