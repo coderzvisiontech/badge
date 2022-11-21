@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 
@@ -284,8 +285,8 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
                   axis: Axis.horizontal,
                   axisAlignment: 1,
                   child: Container(
-                    child: Image.asset(
-                      "assets/images/star_flare1.png",
+                    child: SvgPicture.asset(
+                      "assets/images/flare.svg",
                       height: 350,
                     ),
                   ),
@@ -299,8 +300,8 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
                     child: Stack(
                       alignment: Alignment.center,
                       children: <Widget>[
-                        Image.asset(
-                          "assets/images/full_star.png",
+                        SvgPicture.asset(
+                          "assets/images/star_filled.svg",
                           height: 180,
                         ),
                         Positioned(
@@ -326,28 +327,30 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
                 visible: showStar,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 0),
-                  child: Image.asset(
-                    "assets/images/empty_star.png",
+                  child: SvgPicture.asset(
+                    "assets/images/star_transparent.svg",
                     height: 180,
                   ),
                 ),
               ),
               Visibility(
                 visible: _showBadge(),
+
                 child: Padding(
-                  padding: const EdgeInsets.only(
+                  padding: const EdgeInsets.only(left: 50,
                     top: 130.0,
                   ),
-                  child: SizeTransition(
-                    sizeFactor: badgeSizeAnim,
-                    axis: Axis.horizontal,
-                    axisAlignment: 1,
-                    child: Image.asset(
-                      "assets/images/badge1.png",
-                      height: 200,
-                      width: 300,
-                    ),
-                  ),
+
+        child:SizeTransition(
+          sizeFactor: badgeSizeAnim,
+          axis: Axis.horizontal,
+          axisAlignment: 1,
+          child: SvgPicture.asset(
+            "assets/images/banner.svg",
+            height: 150,
+          ),
+        ) ,
+
                 ),
               ),
               Visibility(
@@ -358,10 +361,10 @@ class _MyAnimPageState extends State<MyAnimPage> with TickerProviderStateMixin {
                     sizeFactor: badgeSizeAnim,
                     axis: Axis.horizontal,
                     axisAlignment: 1,
-                    child: Image.asset(
-                      "assets/images/sparkle.png",
-                      height: 80,
-                      width: 80,
+                    child: SvgPicture.asset(
+                      "assets/images/sparkle.svg",
+                      height: 30,
+                      width: 30,
                     ),
                   ),
                 ),
